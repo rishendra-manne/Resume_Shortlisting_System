@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CV Parser & Shortlister</title>
+
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <style>
+        :root {
+            --primary: #7c4dff;
+            --primary-dark: #5e35b1;
+            --accent: #00e5ff;
+            --dark-bg: #121212;
+            --dark-card: #1e1e1e;
+            --card-hover: #292929;
+            --text-primary: #f5f5f5;
+            --text-secondary: #aaaaaa;
+            --success-color: #00c853;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+            padding-top: 80px;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(124, 77, 255, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 229, 255, 0.08) 0%, transparent 25%);
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            background-color: rgba(14, 14, 14, 0.95) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            background: linear-gradient(45deg, #7c4dff, #00e5ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+
+        .card {
+            background-color: var(--dark-card);
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 40px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+            background-color: var(--card-hover);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            font-weight: 600;
+            padding: 20px 25px;
+            border-bottom: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+        }
+
+        .card:hover .card-header::after {
+            animation: shine 1.5s infinite;
+        }
+
+        @keyframes shine {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .btn {
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            margin-right: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #5e35b1, #7c4dff);
+            border: none;
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #0091ea, #00b0ff);
+            border: none;
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #d50000, #ff1744);
+            border: none;
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border-radius: 12px;
+            padding: 14px 18px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.15);
+            color: white;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(124, 77, 255, 0.3);
+            border-radius: 16px;
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            background-color: rgba(124, 77, 255, 0.03);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background-color: rgba(124, 77, 255, 0.08);
+            transform: scale(1.02);
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(124, 77, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .upload-area:hover::before {
+            opacity: 1;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .file-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .file-item:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+            border-left-color: var(--primary);
+        }
+
+        .file-item a {
+            color: var(--text-primary);
+            text-decoration: none;
+            flex-grow: 1;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .file-item a:hover {
+            color: var(--primary);
+        }
+
+        .file-icon {
+            margin-right: 16px;
+            color: var(--primary);
+            font-size: 1.4rem;
+            transition: transform 0.3s ease;
+        }
+
+        .file-item:hover .file-icon {
+            transform: rotate(10deg);
+        }
+
+        .animated-pulse {
+            animation: subtle-pulse 3s infinite;
+        }
+
+        @keyframes subtle-pulse {
+            0% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.08);
+            }
+            100% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+        }
+
+        /* Custom File Upload Button */
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-upload-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* Wave Animation */
+        .wave-container {
+            height: 80px;
+            position: relative;
+            overflow: hidden;
+            margin-top: -30px;
+            margin-bottom: 30px;
+        }
+
+        .wave {
+            position: absolute;
+            width: 100%;
+            height: 80px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%237c4dff' fill-opacity='0.2' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,106.7C960,117,1056,139,1152,138.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            animation: wave 20s linear infinite;
+            opacity: 0.2;
+        }
+
+        .wave:nth-child(2) {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2300e5ff' fill-opacity='0.1' d='M0,160L48,144C96,128,192,96,288,106.7C384,117,480,171,576,192C672,213,768,203,864,176C960,149,1056,107,1152,96C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            animation: wave-reverse 25s linear infinite;
+            opacity: 0.1;
+        }
+
+        @keyframes wave {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 1440px; }
+        }
+
+        @keyframes wave-reverse {
+            0% { background-position-x: 1440px; }
+            100% { background-position-x: 0; }
+        }
+
+        /* Glassmorphism effect */
+        .glass-card {
+            backdrop-filter: blur(16px);
+            background-color: rgba(30, 30, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Stats counter */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            flex: 1;
+            min-width: 150px;
+            margin: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Step indicators */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            width: 33.333%;
+            text-align: center;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            box-shadow: 0 0 15px rgba(124, 77, 255, 0.5);
+        }
+
+        .step-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-title {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(14, 14, 14, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Label styling */
+        label {
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+
+        /* Submit button emphasis */
+        .btn-submit {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 14px 30px;
+        }
+
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: rotate(30deg);
+            transition: transform 0.5s ease;
+        }
+
+        .btn-submit:hover::after {
+            transform: rotate(30deg) translate(10%, 10%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand animate__animated animate__fadeInLeft" href="/">
+                <i class="fas fa-robot me-2"></i>Smart CV Matcher
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active animate__animated animate__fadeInRight" href="/">
+                            <i class="fas fa-home me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link animate__animated animate__fadeInRight" href="#" style="animation-delay: 0.1s">
+                            <i class="fas fa-history me-1"></i> History
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link animate__animated animate__fadeInRight" href="#" style="animation-delay: 0.2s">
+                            <i class="fas fa-cog me-1"></i> Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Wave effect -->
+    <div class="wave-container">
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+
+    <div class="container animate__animated animate__fadeIn">
+        <!-- Stats Counter -->
+        <div class="stats-container animate__animated animate__fadeInUp">
+            <div class="stat-item">
+                <div class="stat-number" id="resumeCount">0</div>
+                <div class="stat-label">Resumes Processed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="matchRate">0%</div>
+                <div class="stat-label">Average Match Rate</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="timeCount">0</div>
+                <div class="stat-label">Minutes Saved</div>
+            </div>
+        </div>
+
+        <!-- Process Steps -->
+        <div class="step-indicator animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
+            <div class="step active">
+                <div class="step-circle">1</div>
+                <div class="step-title">Upload Resumes</div>
+            </div>
+            <div class="step">
+                <div class="step-circle">2</div>
+                <div class="step-title">Define Job Requirements</div>
+            </div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <div class="step-title">Get Matched Candidates</div>
+            </div>
+        </div>
+
+        <!-- Resume Upload Card -->
+        <div class="card glass-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+            <div class="card-header">
+                <i class="fas fa-cloud-upload-alt me-2"></i> Upload Resumes
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="uploadForm">
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-file-upload fa-4x mb-4 text-primary animated-pulse"></i>
+                        <h4 class="mb-3">Drag & Drop Files Here</h4>
+                        <p class="text-secondary mb-4">Our AI will analyze resumes and extract important details</p>
+                        <div class="file-upload-wrapper mb-4">
+                            <button type="button" class="btn btn-primary">
+                                <i class="fas fa-folder-open me-2"></i> Browse Files
+                            </button>
+                            <input type="file" name="file" multiple id="fileInput">
+                        </div>
+                        <p class="small text-secondary mb-0">Supported formats: PDF, DOC, DOCX, TXT</p>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-upload me-2"></i> Upload Resumes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Uploaded Files Card -->
+        {% if files %}
+        <div class="card glass-card animate__animated animate__fadeInUp" style="animation-delay: 0.5s">
+            <div class="card-header">
+                <i class="fas fa-file-alt me-2"></i> Uploaded Resumes
+            </div>
+            <div class="card-body">
+                <ul class="file-list">
+                    {% for code, file in files.items() %}
+                    <li class="file-item animate__animated animate__fadeInLeft">
+                        <i class="fas fa-file-pdf file-icon"></i>
+                        <a href="/download/{{ code }}">{{ file }}</a>
+                        <span class="badge bg-primary bg-opacity-25 text-primary ms-auto me-2 px-3 py-2">Ready</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Job Description Card -->
+        <div class="card glass-card animate__animated animate__fadeInUp" style="animation-delay: 0.6s">
+            <div class="card-header">
+                <i class="fas fa-briefcase me-2"></i> Define Job Requirements
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/process">
+                    <div class="form-group mb-4">
+                        <label class="mb-2">
+                            <i class="fas fa-pen me-2"></i> Enter Detailed Job Description
+                        </label>
+                        <textarea class="form-control" rows="6" name="rawtext" placeholder="Include required skills, qualifications, experience, and other important criteria..." required></textarea>
+                        <div class="form-text text-muted mt-2">
+                            <i class="fas fa-lightbulb me-1 text-warning"></i>
+                            Pro tip: Be specific about required skills, experience level, and technical requirements.
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="advancedMatching" checked>
+                            <label class="form-check-label" for="advancedMatching">Advanced AI Matching</label>
+                        </div>
+
+                        <div>
+                            <button type="reset" class="btn btn-danger me-2">
+                                <i class="fas fa-eraser me-2"></i> Clear
+                            </button>
+                            <button type="submit" class="btn btn-submit">
+                                <i class="fas fa-magic me-2"></i> Find Best Matches
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4 text-center text-secondary">
+        <div class="container">
+            <div class="mb-3">
+                <a href="#" class="text-secondary mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+                <a href="#" class="text-secondary mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+                <a href="#" class="text-secondary mx-2"><i class="fab fa-github fa-lg"></i></a>
+            </div>
+            <p>© 2025 Smart CV Matcher | Powered by Advanced ML Algorithms</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Drag and Drop Functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            uploadArea.classList.add('bg-primary', 'bg-opacity-10');
+            uploadArea.style.borderColor = 'var(--primary)';
+            uploadArea.style.transform = 'scale(1.02)';
+        }
+
+        function unhighlight() {
+            uploadArea.classList.remove('bg-primary', 'bg-opacity-10');
+            uploadArea.style.borderColor = 'rgba(124, 77, 255, 0.3)';
+            uploadArea.style.transform = 'scale(1)';
+        }
+
+        // Handle dropped files
+        uploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+
+            // Visual feedback
+            document.querySelector('.animated-pulse').classList.add('animate__animated', 'animate__bounce');
+            setTimeout(() => {
+                document.querySelector('.animated-pulse').classList.remove('animate__animated', 'animate__bounce');
+            }, 1000);
+
+            // Update file count
+            const fileCount = files.length;
+            document.getElementById('resumeCount').innerText = fileCount;
+            animateCountUp('resumeCount', 0, fileCount, 1500);
+
+            if (fileCount > 0) {
+                // Move to step 2
+                document.querySelectorAll('.step')[0].classList.add('active');
+                document.querySelectorAll('.step')[1].classList.add('active');
+
+                // Animate match rate
+                const matchRate = Math.floor(75 + Math.random() * 15);
+                animateCountUp('matchRate', 0, matchRate, 2000, '%');
+
+                // Animate time saved
+                const timeSaved = fileCount * 15;
+                animateCountUp('timeCount', 0, timeSaved, 2000);
+            }
+        }
+
+        // Click uploadArea to trigger file input
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Animate count up
+        function animateCountUp(elementId, start, end, duration, suffix = '') {
+            const element = document.getElementById(elementId);
+            const range = end - start;
+            const startTime = performance.now();
+
+            function updateNumber(timestamp) {
+                const runtime = timestamp - startTime;
+                const progress = Math.min(runtime / duration, 1);
+                const value = Math.floor(progress * range + start);
+                element.innerText = value + suffix;
+
+                if (runtime < duration) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+
+            requestAnimationFrame(updateNumber);
+        }
+
+        // Initialize counter animations on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                animateCountUp('resumeCount', 0, 12, 2000);
+                animateCountUp('matchRate', 0, 87, 2500, '%');
+                animateCountUp('timeCount', 0, 180, 3000);
+            }, 1000);
+
+            // Step indicator animation
+            document.querySelectorAll('.step-circle').forEach((circle, index) => {
+                setTimeout(() => {
+                    circle.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        circle.style.transform = 'scale(1)';
+                    }, 300);
+                }, index * 500 + 1000);
+            });
+        });
+    </script>
+</body>
+</html>
