@@ -128,7 +128,3 @@ def process():
         sorted_dt.to_csv(out_path, index=False)
 
         return send_file(out_path, as_attachment=True)
-
-
-
-app.run(port=8080, debug=False)
